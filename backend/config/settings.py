@@ -106,3 +106,24 @@ MEDIA_ROOT = env("MEDIA_ROOT", default=str(BASE_DIR.parent / "data" / "media"))
 # Resume uploads
 MAX_RESUME_UPLOAD_BYTES = env.int("MAX_RESUME_UPLOAD_MB", default=5) * 1024 * 1024
 RESUME_MAX_PAGES = env.int("RESUME_MAX_PAGES", default=30)
+
+
+# Job discovery
+DISCOVERY_DEFAULT_KEYWORDS = env.list(
+    "DISCOVERY_DEFAULT_KEYWORDS", default=["python", "django", "backend", "software engineer", "developer"]
+)
+DISCOVERY_MAX_KEYWORDS = env.int("DISCOVERY_MAX_KEYWORDS", default=5)
+DISCOVERY_REQUEST_DELAY_SECONDS = env.float("DISCOVERY_REQUEST_DELAY_SECONDS", default=1.0)
+DISCOVERY_REQUEST_TIMEOUT_SECONDS = env.float("DISCOVERY_REQUEST_TIMEOUT_SECONDS", default=15.0)
+DISCOVERY_ARBEITNOW_MAX_PAGES = env.int("DISCOVERY_ARBEITNOW_MAX_PAGES", default=3)
+
+# Optional daily discovery run via Celery Beat (off by default; sources ask for a few calls per day at most).
+if env.bool("DISCOVERY_SCHEDULE_ENABLED", default=False):
+    from celery.schedules import crontab
+
+    CELERY_BEAT_SCHEDULE = {
+        "scheduled-job-discovery": {
+            "task": "jobs.tasks.scheduled_discovery_task",
+            "schedule": crontab(hour=env.int("DISCOVERY_SCHEDULE_HOUR", default=7), minute=0),
+        }
+    }

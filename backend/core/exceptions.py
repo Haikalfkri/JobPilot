@@ -12,6 +12,22 @@ class InvalidWorkflow(APIException):
     default_code = "invalid_workflow"
 
 
+class Conflict(APIException):
+    """The request conflicts with the current state, e.g. a duplicate attempt (HTTP 409)."""
+
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = "This action conflicts with the current state."
+    default_code = "conflict"
+
+
+class ServiceUnavailable(APIException):
+    """A required background service (for example the task queue) is not reachable (HTTP 503)."""
+
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    default_detail = "The background worker is unavailable. Try again in a moment."
+    default_code = "service_unavailable"
+
+
 def api_exception_handler(exc, context):
     """Consistent error envelope, as described in docs/api-guide.md."""
     response = exception_handler(exc, context)

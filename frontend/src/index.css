@@ -113,3 +113,46 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
   .version { flex-direction: column; align-items: stretch; }
   .add-fact { grid-template-columns: 1fr; }
 }
+
+
+/* ---------- Shared page layout (Jobs, Discovery) ---------- */
+.page { display: grid; gap: 24px; align-content: start; }
+.page h1 { margin: 0; font-size: 1.6rem; }
+.page h2 { margin: 0 0 6px; font-size: 1.15rem; }
+.page .panel p { margin: 0 0 12px; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); text-decoration: none; }
+.field { display: grid; gap: 4px; margin-bottom: 12px; }
+.field input, .filters input, .filters select { font: inherit; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.filters input[type='search'] { flex: 1 1 220px; }
+
+.job-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.job-card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.job-card h2 { margin: 0; font-size: 1.05rem; }
+.job-card h2 a { color: var(--ink); text-decoration: none; }
+.job-card h2 a:hover { color: var(--accent); text-decoration: underline; }
+.job-company { margin: 2px 0 8px; color: var(--muted); }
+.job-meta { margin: 8px 0 0; font-size: 0.85rem; }
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 1px 9px; border: 1px solid var(--line); border-radius: 999px; font-size: 0.8rem; }
+.chip-remote { border-color: var(--accent); }
+.chip-unknown { color: var(--muted); }
+.eligibility { margin: 6px 0 0; font-size: 0.88rem; }
+.eligibility-unknown { font-style: italic; }
+.pager { display: flex; justify-content: center; align-items: center; gap: 16px; }
+
+.job-description { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 75ch; line-height: 1.6; }
+.source-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.source-links a { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); }
+
+.source-toggles { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.source-toggles li { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.source-toggles label { display: inline-flex; align-items: center; gap: 8px; }
+.run-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }
+.run { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.run p { margin: 6px 0 0; }
+.run-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.source-runs { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.badge-partial { border-color: var(--warn); }
+.badge-running, .badge-pending { border-color: var(--accent); }

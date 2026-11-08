@@ -1,10 +1,11 @@
-import { Briefcase, FileText, LayoutDashboard, Search, Send, Sparkles } from 'lucide-react'
+import { Briefcase, FileText, LayoutDashboard, Radar, Search, Send, Sparkles } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { HealthIndicator } from '../components/HealthIndicator'
 
 const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/resume', label: 'Master resume', icon: FileText },
+  { to: '/discovery', label: 'Discovery', icon: Radar },
   { to: '/jobs', label: 'Jobs', icon: Search },
   { to: '/tailoring', label: 'Tailored resumes', icon: Sparkles },
   { to: '/applications', label: 'Applications', icon: Send },
