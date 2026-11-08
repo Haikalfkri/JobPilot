@@ -2,6 +2,7 @@
 import logging
 
 from django.utils import timezone
+from core import tasks_bus
 
 from .ingestion import ingest_listing
 from .models import DiscoveryRun, JobSource, RunStatus, SourceRun
@@ -75,3 +76,6 @@ def run_discovery(run_id) -> None:
     }
     run.finished_at = timezone.now()
     run.save()
+
+    if run.summary["created"] or run.summary["updated"]:  # score new and changed jobs (best effort)
+        tasks_bus.send_task_by_name("matching.tasks.refresh_matches_task")

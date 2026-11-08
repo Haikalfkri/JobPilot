@@ -26,6 +26,8 @@ export type JobSummary = {
   last_verified_at: string | null
   status: 'active' | 'expired' | 'closed' | 'unknown'
   sources: { source_key: string; source_name: string; original_url: string }[]
+  match_score: number | null
+  match_eligibility: 'eligible' | 'ineligible' | 'uncertain' | 'not_assessed' | null
 }
 
 export type JobDetail = JobSummary & {
@@ -77,7 +79,8 @@ export type DiscoveryRun = {
 export type Paginated<T> = { count: number; next: string | null; previous: string | null; results: T[] }
 
 export type JobFilters = Partial<Record<
-  'q' | 'work_arrangement' | 'remote_eligibility' | 'experience_level' | 'published_within_days' | 'page',
+  'q' | 'work_arrangement' | 'remote_eligibility' | 'experience_level' | 'published_within_days' | 'page'
+  | 'min_match_score' | 'hide_ineligible' | 'ordering',
   string
 >>
 

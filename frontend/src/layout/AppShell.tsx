@@ -1,4 +1,4 @@
-import { Briefcase, FileText, LayoutDashboard, Radar, Search, Send, Sparkles } from 'lucide-react'
+import { Briefcase, FileText, LayoutDashboard, Radar, Search, Send, Sparkles, Settings } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { HealthIndicator } from '../components/HealthIndicator'
 
@@ -9,6 +9,7 @@ const NAV = [
   { to: '/jobs', label: 'Jobs', icon: Search },
   { to: '/tailoring', label: 'Tailored resumes', icon: Sparkles },
   { to: '/applications', label: 'Applications', icon: Send },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
 export function AppShell() {

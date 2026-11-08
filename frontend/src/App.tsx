@@ -5,6 +5,7 @@ import { JobDetailPage } from './pages/JobDetailPage'
 import { JobsPage } from './pages/JobsPage'
 import { Placeholder } from './pages/Placeholder'
 import { ResumePage } from './pages/ResumePage'
+import { SettingsPage } from './pages/SettingsPage'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="jobs/:jobId" element={<JobDetailPage />} />
         <Route path="tailoring" element={<Placeholder title="Tailored resumes" next="Generate and validate a resume for a job. Built in Phase 4." />} />
         <Route path="applications" element={<Placeholder title="Applications" next="Track what you applied to and which resume you used. Built in Phase 5." />} />
+        <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<Placeholder title="Page not found" next="Use the menu to go back." />} />
       </Route>
     </Routes>

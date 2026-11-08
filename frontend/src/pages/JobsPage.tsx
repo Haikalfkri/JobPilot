@@ -1,31 +1,68 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
+import { Calculator, SlidersHorizontal } from 'lucide-react'
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { listJobs, type JobFilters as Filters } from '../api/jobs'
+import { getPreferences, recalculateAll } from '../api/matching'
 import { JobBadges } from '../components/jobs/JobBadges'
 import { JobFilters } from '../components/jobs/JobFilters'
+import { ScoreBadge } from '../components/matching/ScoreBadge'
 import { timeAgo } from '../lib/format'
 
 const PAGE_SIZE = 25
 
 export function JobsPage() {
   const [params, setParams] = useSearchParams()
+  const [notice, setNotice] = useState('')
   const filters = Object.fromEntries(params.entries()) as Filters
   const page = Number(filters.page ?? '1')
 
-  const { data, isPending, isError, error, isPlaceholderData } = useQuery({
+  const { data, isPending, isError, error, isPlaceholderData, refetch } = useQuery({
     queryKey: ['jobs', filters],
     queryFn: () => listJobs(filters),
     placeholderData: keepPreviousData,
   })
+  const preferences = useQuery({ queryKey: ['preferences'], queryFn: getPreferences })
 
   const change = (next: Filters) => {
     const clean = Object.fromEntries(Object.entries(next).filter(([, value]) => value)) as Record<string, string>
     setParams(clean)
   }
+  const applyPreferences = () => {
+    if (!preferences.data) return
+    change({
+      ordering: '-match_score',
+      min_match_score: String(preferences.data.minimum_match_score),
+      published_within_days: String(preferences.data.publication_window_days),
+      hide_ineligible: 'true',
+    })
+  }
+  const recalc = useMutation({
+    mutationFn: recalculateAll,
+    onSuccess: () => {
+      setNotice('Recalculating all scores in the background. The list refreshes in a few seconds.')
+      setTimeout(() => { refetch(); setNotice('') }, 6000)
+    },
+  })
 
   return (
     <div className="page">
       <h1>Jobs</h1>
+      <div className="toolbar">
+        <button type="button" className="btn" disabled={!preferences.data} onClick={applyPreferences}>
+          <SlidersHorizontal size={16} aria-hidden="true" /> Use my preferences
+        </button>
+        <button type="button" className="btn" disabled={recalc.isPending} onClick={() => recalc.mutate()}>
+          <Calculator size={16} aria-hidden="true" /> Recalculate scores
+        </button>
+        <Link to="/settings" className="muted">Edit preferences</Link>
+      </div>
+      {notice && <p className="notice notice-warn">{notice}</p>}
+      {recalc.isError && (
+        <p className="notice notice-error" role="alert">
+          {recalc.error.message} <Link to="/resume">Go to your resume</Link>
+        </p>
+      )}
       <JobFilters filters={filters} onChange={change} />
       {isPending && <p className="muted">Loading jobs…</p>}
       {isError && <p className="notice notice-error" role="alert">{error.message}</p>}
@@ -41,7 +78,10 @@ export function JobsPage() {
           <ul className="job-list" aria-busy={isPlaceholderData}>
             {data.results.map((job) => (
               <li key={job.id} className="job-card">
-                <h2><Link to={`/jobs/${job.id}`}>{job.title}</Link></h2>
+                <div className="job-card-head">
+                  <h2><Link to={`/jobs/${job.id}`}>{job.title}</Link></h2>
+                  <ScoreBadge job={job} />
+                </div>
                 <p className="job-company">{job.company_name}</p>
                 <JobBadges job={job} />
                 <p className="muted job-meta">

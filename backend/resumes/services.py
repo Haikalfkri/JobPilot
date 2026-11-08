@@ -3,6 +3,7 @@ import logging
 
 from django.db import transaction
 from django.db.models import Max
+from core import tasks_bus
 
 from core.exceptions import InvalidWorkflow
 
@@ -55,8 +56,14 @@ def reprocess_resume(resume: MasterResume) -> MasterResume:
     return resume
 
 
-@transaction.atomic
 def activate_resume(resume: MasterResume) -> MasterResume:
+    resume = _activate(resume)
+    tasks_bus.send_task_by_name("matching.tasks.refresh_matches_task")  # a new active resume changes every score
+    return resume
+
+
+@transaction.atomic
+def _activate(resume: MasterResume) -> MasterResume:
     if resume.parsing_status not in (ParsingStatus.REVIEW_REQUIRED, ParsingStatus.COMPLETED):
         raise InvalidWorkflow("Only a successfully parsed resume can be activated.")
     MasterResume.objects.filter(is_active=True).exclude(pk=resume.pk).update(is_active=False)

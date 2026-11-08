@@ -4,6 +4,10 @@ import type { JobFilters as Filters } from '../../api/jobs'
 type Props = { filters: Filters; onChange: (next: Filters) => void }
 
 const SELECTS: { key: keyof Filters; label: string; options: [string, string][] }[] = [
+  { key: 'ordering', label: 'Sort',
+    options: [['-published_at', 'Newest first'], ['-match_score', 'Best match first']] },
+  { key: 'min_match_score', label: 'Match',
+    options: [['50', '50% or better'], ['70', '70% or better'], ['85', '85% or better']] },
   { key: 'work_arrangement', label: 'Work arrangement',
     options: [['remote', 'Remote'], ['hybrid', 'Hybrid'], ['onsite', 'On-site'], ['unknown', 'Not stated']] },
   { key: 'remote_eligibility', label: 'Who can apply',
@@ -30,6 +34,11 @@ export function JobFilters({ filters, onChange }: Props) {
           {options.map(([value, text]) => <option key={value} value={value}>{text}</option>)}
         </select>
       ))}
+      <label className="check">
+        <input type="checkbox" checked={filters.hide_ineligible === 'true'}
+          onChange={(event) => update('hide_ineligible', event.target.checked ? 'true' : '')} />
+        Hide jobs not open to me
+      </label>
       <button type="submit" className="btn">Search</button>
     </form>
   )

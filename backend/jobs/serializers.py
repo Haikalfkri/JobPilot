@@ -19,14 +19,23 @@ class ListingSerializer(serializers.ModelSerializer):
 
 class JobListSerializer(serializers.ModelSerializer):
     sources = serializers.SerializerMethodField()
+    match_score = serializers.SerializerMethodField()
+    match_eligibility = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
         fields = ["id", "title", "company_name", "location_text", "country_code", "work_arrangement",
                   "remote_eligibility", "eligible_countries", "employment_type", "experience_level",
                   "salary_min", "salary_max", "salary_currency", "published_at", "discovered_at",
-                  "last_verified_at", "status", "sources"]
+                  "last_verified_at", "status", "sources", "match_score", "match_eligibility"]
         read_only_fields = fields
+
+    def get_match_score(self, job) -> float | None:
+        score = getattr(job, "match_score", None)  # annotated by the list query only
+        return None if score is None else float(score)
+
+    def get_match_eligibility(self, job) -> str | None:
+        return getattr(job, "match_eligibility", None)
 
     def get_sources(self, job) -> list[dict]:
         return [{"source_key": l.source.key, "source_name": l.source.display_name,
@@ -51,8 +60,13 @@ class JobFilterSerializer(serializers.Serializer):
     status = serializers.ChoiceField(required=False, choices=JobStatus.choices)
     source = serializers.CharField(required=False, max_length=50)
     published_within_days = serializers.IntegerField(required=False, min_value=1, max_value=3650)
+    min_match_score = serializers.FloatField(required=False, min_value=0, max_value=100)
+    eligibility_status = serializers.ChoiceField(
+        required=False, choices=["eligible", "ineligible", "uncertain", "not_assessed"])
+    hide_ineligible = serializers.BooleanField(required=False)
     ordering = serializers.ChoiceField(
-        required=False, choices=["published_at", "-published_at", "discovered_at", "-discovered_at"])
+        required=False, choices=["published_at", "-published_at", "discovered_at", "-discovered_at",
+                                 "match_score", "-match_score"])
 
 
 class DiscoverRequestSerializer(serializers.Serializer):

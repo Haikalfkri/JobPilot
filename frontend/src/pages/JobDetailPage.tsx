@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getJob, verifyJob } from '../api/jobs'
 import { JobBadges } from '../components/jobs/JobBadges'
+import { MatchPanel } from '../components/matching/MatchPanel'
 import { formatDate, formatDateTime, safeHref } from '../lib/format'
 
 const STATUS_TEXT = {
@@ -55,6 +56,8 @@ export function JobDetailPage() {
         {salary && <p className="muted">Salary stated by the source: {salary}</p>}
       </header>
 
+      <MatchPanel jobId={jobId} />
+      
       <section className="panel">
         <h2>Availability</h2>
         <p>{STATUS_TEXT[job.status]}.{' '}

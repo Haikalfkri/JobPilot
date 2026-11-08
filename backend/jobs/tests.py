@@ -472,3 +472,14 @@ def test_inspect_source_command_prints_raw_fields_and_parsed_result(capsys):
     output = capsys.readouterr().out
     assert "Raw fields:" in output and "jobTitle" in output
     assert '"remote_eligibility": "worldwide"' in output
+
+
+@pytest.mark.django_db
+def test_discovery_queues_a_match_refresh_only_when_something_changed(sources, monkeypatch, task_bus):
+    patch_adapters(monkeypatch, {"jobicy": FakeAdapter(items=[jobicy_job(1)])})
+    run_discovery(make_run(["jobicy"]).id)
+    assert [name for name, _, _ in task_bus] == ["matching.tasks.refresh_matches_task"]
+
+    task_bus.clear()
+    run_discovery(make_run(["jobicy"]).id)  # the same listing again: nothing new, nothing to rescore
+    assert task_bus == []

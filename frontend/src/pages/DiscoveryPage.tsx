@@ -4,6 +4,7 @@ import { useState } from 'react'
 import {
   isActiveRun, listRuns, listSources, setSourceEnabled, startDiscovery, type DiscoveryRun, type RunStatus,
 } from '../api/jobs'
+import { getPreferences } from '../api/matching'
 import { formatDateTime } from '../lib/format'
 
 const STATUS_LABEL: Record<RunStatus, string> = {
@@ -45,6 +46,8 @@ export function DiscoveryPage() {
   const [keywordText, setKeywordText] = useState('')
 
   const sources = useQuery({ queryKey: ['sources'], queryFn: listSources })
+  const preferences = useQuery({ queryKey: ['preferences'], queryFn: getPreferences })
+  const savedKeywords = preferences.data?.keywords ?? []
   const runs = useQuery({
     queryKey: ['runs'],
     queryFn: listRuns,
@@ -99,11 +102,11 @@ export function DiscoveryPage() {
         <h2>Run discovery</h2>
         <label className="field">
           <span>Keywords (comma-separated, optional)</span>
-          <input type="text" value={keywordText} placeholder="Leave empty to use the default keywords"
+          <input type="text" value={keywordText} placeholder={savedKeywords.length ? `Leave empty to use your saved keywords: ${savedKeywords.join(', ')}` : 'Leave empty to use the default keywords'}
             onChange={(event) => setKeywordText(event.target.value)} />
         </label>
         <button type="button" className="btn btn-primary" disabled={start.isPending || running || enabledCount === 0}
-          onClick={() => start.mutate(keywords.length ? { keywords } : {})}>
+          onClick={() => start.mutate(keywords.length ? { keywords } : savedKeywords.length ? { keywords: savedKeywords } : {})}>
           <Play size={16} aria-hidden="true" /> {running ? 'A run is in progress…' : 'Run discovery'}
         </button>
         {enabledCount === 0 && <p className="muted">Enable at least one source first.</p>}
