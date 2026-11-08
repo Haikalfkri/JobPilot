@@ -102,3 +102,7 @@ USE_I18N = True
 USE_TZ = True
 
 MEDIA_ROOT = env("MEDIA_ROOT", default=str(BASE_DIR.parent / "data" / "media"))
+
+# Resume uploads
+MAX_RESUME_UPLOAD_BYTES = env.int("MAX_RESUME_UPLOAD_MB", default=5) * 1024 * 1024
+RESUME_MAX_PAGES = env.int("RESUME_MAX_PAGES", default=30)
