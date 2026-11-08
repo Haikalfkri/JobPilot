@@ -1,0 +1,14 @@
+.env
+.venv/
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.sqlite3
+.DS_Store
+
+# Data pribadi dan runtime: jangan pernah di-commit
+data/
+*.log
+backups/
